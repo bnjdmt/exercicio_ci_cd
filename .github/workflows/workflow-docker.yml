@@ -1,0 +1,59 @@
+name: Workflow lors d'un push
+# Ce workflow se déclenche lors d'un "push" sur le dépôt
+on: push
+
+jobs:
+  build:
+    name: Build, test et run application
+    # Le job sera exécuté sur la dernière version d'Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Étape 1: Récupération du code de l'application depuis le dépôt GitHub
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Étape 2: Configuration du JDK version 17 en utilisant la distribution 'temurin'
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Étape 3: Installation des dépendances Maven nécessaires à l'application
+      - name: Install dependencies
+        run: mvn install
+
+      # Étape 4: Mise en cache du répertoire local Maven pour éviter de retélécharger les dépendances à chaque build
+      - name: Cache Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # Étape 5: Compilation et empaquetage de l'application avec Maven
+      - name: Build application
+        run: mvn package
+
+      # Étape 6: Téléversement de l'artefact (le fichier .jar généré) pour l'utiliser dans d'autres jobs ou le récupérer plus tard
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: springboot-app
+          path: target/*.jar
+
+  docker:
+    name: Build and push Docker image
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
