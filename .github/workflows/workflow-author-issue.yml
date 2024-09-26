@@ -11,4 +11,4 @@ jobs:
       - name: message issue
         run: |
           echo "Bonjour ${{ github.actor }}"
-          echo "Nous avons bien pris en compte votre problème du nom de: ${{ github.event_name }}"
+          echo "Nous avons bien pris en compte votre problème du nom de: ${{ github.event.issue.title }}"
