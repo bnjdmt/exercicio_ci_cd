@@ -1,0 +1,12 @@
+name: Workflow qui se déclenche lors d'un fork'
+on:
+  fork:
+
+
+jobs:
+  variables:
+    runs-on: ubuntu-latest
+    steps:
+      - name: message fork
+        run: |
+          echo "Le projet a bien été fork"

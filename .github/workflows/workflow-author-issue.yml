@@ -1,0 +1,14 @@
+name: Workflow qui se déclenche lors de la création d'une issue
+on:
+  issues:
+    types: opened
+
+
+jobs:
+  variables:
+    runs-on: ubuntu-latest
+    steps:
+      - name: message issue
+        run: |
+          echo "Bonjour ${{ github.actor }}"
+          echo "Nous avons bien pris en compte votre problème du nom de: ${{ github.event_name }}"
