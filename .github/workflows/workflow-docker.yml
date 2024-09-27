@@ -65,13 +65,13 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_NAME }}
+          username: ${{ vars.DOCKERHUB_NAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: checkout code
         uses: actions/checkout@v4
 
       - name: Build docker image
-        run: docker build -t ${{ secrets.DOCKERHUB_NAME }}/builder .
+        run: docker build -t ${{ vars.DOCKERHUB_NAME }}/builder .
 
       - name: push docker image
-        run: docker push ${{ secrets.DOCKERHUB_NAME }}/builder
+        run: docker push ${{ vars.DOCKERHUB_NAME }}/builder
